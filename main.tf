@@ -10,9 +10,8 @@ locals {
   namespace = substr(join("-", [var.namespace, random_string.rand.result]), 0, 24)
 }
 
-resource "aws_resourcegroups_group" "resourcegroups-group" {
-  name = "$(local.namespace)-group"
-
+resource "aws_resourcegroups_group" "resourcegroups_group" {
+  name = "${local.namespace}-group"
   resource_query {
     query = <<-JSON
   {
@@ -24,9 +23,9 @@ resource "aws_resourcegroups_group" "resourcegroups-group" {
           "Key": "ResourceGroup",
           "Values": ["${local.namespace}"]
       }
-  ]
+    ]
 }
-    JSON
+JSON
   }
 }
 
@@ -39,6 +38,7 @@ resource "aws_kms_key" "kms_key" {
 resource "aws_s3_bucket" "s3_bucket" {
   bucket        = "${local.namespace}-state-bucket"
   force_destroy = var.force_destroy_state
+
   versioning {
     enabled = true
   }
@@ -55,7 +55,7 @@ resource "aws_s3_bucket" "s3_bucket" {
   }
 }
 
-resource "aws_s3_bucket_public_access_block" "s3_bucket" {
+resource "aws_s3_bucket_public_access_block" "s3bucket" {
   bucket                  = aws_s3_bucket.s3_bucket.id
   block_public_acls       = true
   block_public_policy     = true
@@ -75,3 +75,4 @@ resource "aws_dynamodb_table" "dynamodb_table" {
     ResourceGroup = local.namespace
   }
 }
+

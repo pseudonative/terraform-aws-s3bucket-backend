@@ -1,27 +1,25 @@
 data "aws_caller_identity" "current" {}
 
 locals {
-  principal_arns = var.principal_arns != null ? var.principal_arns : [data.aws_caller_identity.current.arn]
+  principle_arns = var.principle_arns != null ? var.principle_arns : [data.aws_caller_identity.current.arn]
 }
 
 resource "aws_iam_role" "iam_role" {
-  name = "${local.namespace}-tf-assume-role"
-
+  name               = "${local.namespace}-tf-assume-role"
   assume_role_policy = <<-EOF
   {
-      "Version": "2012-10.17",
+      "Version": "2012-10-17",
       "Statement": [
-          {
-              "Action": "sts:AssumeRole",
-              "Principal": {
-                  "AWS": ${jsonencode(local.principal_arns)}
-              },
-              "Effect": "Allow"
-          }
+        {
+            "Action": "sts:AssumeRole",
+            "Principal": {
+                "AWS": ${jsonencode(local.principal_arns)}
+            },
+            "Effect": "Allow"
+        }
       ]
   }
   EOF
-
   tags = {
     ResourceGroup = local.namespace
   }
@@ -37,7 +35,7 @@ data "aws_iam_policy_document" "policy_doc" {
     ]
   }
   statement {
-    actions = ["s3:GetObject", "s3:PutObject", "s3:DeleteObject"]
+    actions = ["s3:GetObject", "s3:Putobject", "s3:DeleteObject"]
 
     resources = [
       "${aws_s3_bucket.s3_bucket.arn}/*",
